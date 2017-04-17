@@ -18,14 +18,15 @@ import pyalg_test
 import constant as ct
 import pandas as pd 
 import json
-import pyalg_utils,data,data_sql
+import pyalg_utils,data
 from utils import dataFramefeed
 
 def turtle_test(load_type = 'csv',dataString = 'pyalg'):
     if load_type =='csv':
         #Load the yahoo feed from the CSV file
         feed = yahoofeed.Feed()
-        feed.addBarsFromCSV("orcl", "D:/data2/600687.csv")
+        # feed.addBarsFromCSV("orcl", "D:/data2/600687.csv")
+        feed.addBarsFromCSV("orcl", "D:/data2/600300.csv")
     elif load_type =='dataFrame':
         #从dataFrame中加载，
         dat = pd.read_csv('d:/data/600687.csv',index_col=0,encoding='gbk')
@@ -33,6 +34,7 @@ def turtle_test(load_type = 'csv',dataString = 'pyalg'):
         feed.addBarsFromDataFrame("orcl", dat)
     elif load_type == 'sql':
         #此处也是
+        import data_sql
         dat = data_sql.get_h_data('600848')
         feed = dataFramefeed.Feed()
         feed.addBarsFromDataFrame("orcl", dat)

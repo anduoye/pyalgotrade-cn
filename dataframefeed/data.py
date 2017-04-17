@@ -32,7 +32,8 @@ def save_data():
                 _data_.to_csv('d:/data/%s.csv'%code,encoding='gbk')
                 if _data_.index[0] in ct._start_range and _data_.index[-1] in ct._end_range:                          #筛选一次代码，使用头尾都包含的代码
                     inuse.append(code)
-        except IOError: 
+        except Exception as e: 
+            print ('failed ', code, e.args)
             pass    #不行的话还是continue           
     #print len(inuse)
     _df_inuse = DataFrame(inuse,columns={'code'})
@@ -58,7 +59,8 @@ def refresh_data(_start_ ='2015-08-01',_end_ = ct._TODAY_):
                     _data_.to_csv(filename,encoding='gbk')
                 if code in inuse['code'].values and _data_.index[0] in pd.date_range(start=_start_,periods=7) and _data_.index[-1] in pd.date_range(end=_end_,periods=7):                          #筛选一次代码，使用头尾都包含的代码
                     new_inuse.append(code)  
-        except IOError: 
+        except Exception as e: 
+            print ('failed ', code, e.args)
             pass    #不行的话还是continue           
     #print len(inuse)
     _df_inuse = DataFrame(new_inuse,columns={'code'})
@@ -127,15 +129,15 @@ def plt_macd(df,da):
     plt.show()  
 
 
-#save_data()
-#refresh_data()
-#df = pd.read_csv('d:/data/600848.csv',index_col=0,parse_dates=[0],encoding='gbk') 
-#da = get_macd(df) 
-#plt_macd(df,da)
-#_data_ = pd.read_csv('d:/data/600848.csv',index_col=0,encoding='gbk')  
-#dic = read_data()
-#_data_ = ts.get_hist_data('900901',start=ct._START_,end=ct._MIDDLE_)
-#print _data_
+# save_data()
+# refresh_data()
+# df = pd.read_csv('d:/data/600848.csv',index_col=0,parse_dates=[0],encoding='gbk') 
+# da = get_macd(df) 
+# plt_macd(df,da)
+# _data_ = pd.read_csv('d:/data/600848.csv',index_col=0,encoding='gbk')  
+# dic = read_data()
+# _data_ = ts.get_hist_data('900901',start=ct._START_,end=ct._MIDDLE_)
+# print _data_
 
 
 def temp2():
@@ -178,17 +180,21 @@ def temp():
 #temp2() 
 #重命名索引名，列名，将调整收盘价置为none
 def change_type_to_yahoo():
-    inuse = pd.read_csv('d:/data/code_inuse.csv',index_col=0,parse_dates=[0],encoding='gbk')               
+    # inuse = pd.read_csv('d:/data/code_inuse.csv',index_col=0,parse_dates=[0],encoding='gbk')               
+    inuse = pd.read_csv('d:/data/code.csv',index_col=0,parse_dates=[0],encoding='gbk')               
     inuse.to_csv('d:/data2/code_inuse.csv',encoding='gbk')
     re_columns ={'high':'High','low':'Low','open':'Open','close':'Close','volume':'Volume','price_change':'Adj Close'}  
     i=0
     for code in inuse['code'].values:
         i+= 1
         print i,code
-        _data_ = pd.read_csv('d:/data/%s.csv'%code,index_col=0,parse_dates=[0],encoding='gbk')  #默认取3年，start 8-1包括
-        _data_=_data_.rename(columns=re_columns)
-        _data_.index.name = 'Date'
-        _data_.to_csv('d:/data2/%s.csv'%code,columns=['Open','High','Low','Close','Volume','Adj Close'],date_format="%Y-%m-%d",encoding='gbk')
+        try:
+            _data_ = pd.read_csv('d:/data/%s.csv'%code,index_col=0,parse_dates=[0],encoding='gbk')  #默认取3年，start 8-1包括
+            _data_=_data_.rename(columns=re_columns)
+            _data_.index.name = 'Date'
+            _data_.to_csv('d:/data2/%s.csv'%code,columns=['Open','High','Low','Close','Volume','Adj Close'],date_format="%Y-%m-%d",encoding='gbk')
+        except Exception as e:
+            print('failed ', e.args)
         
 def get_beta(values1, values2):
     # http://statsmodels.sourceforge.net/stable/regression.html
@@ -219,7 +225,7 @@ def bigVolume(scope=15,v_times=5,t_percent=20):
         except IOError: 
              pass    #不行的话还是continue
 #refresh_data()              
-#change_type_to_yahoo()
-bigVolume()
+# change_type_to_yahoo()
+# bigVolume()
 #_data_ = pd.read_csv('d:/data/600848.csv',index_col=0,parse_dates=[0],encoding='gbk')   #默认取3年，code为str，start无效的,start 和end若当天有数据则全都取
 #_data_.plot() 
